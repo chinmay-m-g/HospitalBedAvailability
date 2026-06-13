@@ -1,0 +1,13 @@
+{
+  "name": "hospital-bed-availability-system",
+  "version": "1.0.0",
+  "description": "Real-time, scalable hospital bed availability and booking system MVP",
+  "scripts": {
+    "install:all": "npm install && npm install --prefix server && npm install --prefix client",
+    "dev": "concurrently \"npm run dev --prefix server\" \"npm run dev --prefix client\"",
+    "start": "npm run start --prefix server"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}

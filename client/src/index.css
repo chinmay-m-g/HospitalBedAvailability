@@ -1,0 +1,508 @@
+/* Modern Design System for Hospital Bed Availability MVP */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
+
+:root {
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  /* Color Palette - Default Light Mode */
+  --bg-color: #f8fafc;
+  --panel-bg: rgba(255, 255, 255, 0.85);
+  --panel-border: rgba(148, 163, 184, 0.15);
+  --text-main: #0f172a;
+  --text-muted: #64748b;
+  --primary: #2563eb;
+  --primary-hover: #1d4ed8;
+  --primary-glow: rgba(37, 99, 235, 0.15);
+  --input-bg: #ffffff;
+  --input-border: #e2e8f0;
+
+  /* Semantic status colors */
+  --color-available: #10b981;
+  --color-available-glow: rgba(16, 185, 129, 0.15);
+  --color-reserved: #3b82f6;
+  --color-reserved-glow: rgba(59, 130, 246, 0.15);
+  --color-occupied: #f43f5e;
+  --color-occupied-glow: rgba(244, 63, 94, 0.15);
+  --color-maintenance: #f59e0b;
+  --color-maintenance-glow: rgba(245, 158, 11, 0.15);
+
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+  --shadow-md: 0 4px 20px -2px rgba(148, 163, 184, 0.12), 0 2px 8px -1px rgba(148, 163, 184, 0.08);
+  --shadow-lg: 0 20px 25px -5px rgba(148, 163, 184, 0.1), 0 10px 10px -5px rgba(148, 163, 184, 0.04);
+  --glass-blur: blur(12px);
+
+  color-scheme: light dark;
+}
+
+/* Media query to automatically switch to Dark Mode based on browser preferences */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-color: #0b0f19;
+    --panel-bg: rgba(17, 24, 39, 0.65);
+    --panel-border: rgba(255, 255, 255, 0.07);
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
+    --primary: #3b82f6;
+    --primary-hover: #60a5fa;
+    --primary-glow: rgba(59, 130, 246, 0.25);
+    --input-bg: rgba(15, 23, 42, 0.6);
+    --input-border: rgba(255, 255, 255, 0.1);
+
+    --shadow-md: 0 10px 30px -10px rgba(0, 0, 0, 0.5), 0 1px 3px rgba(255, 255, 255, 0.03);
+    --shadow-lg: 0 20px 40px -15px rgba(0, 0, 0, 0.7);
+  }
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  transition: background-color 0.25s ease, border-color 0.25s ease;
+}
+
+body {
+  background-color: var(--bg-color);
+  color: var(--text-main);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Base Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--panel-border);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+/* Typography & Layout elements */
+h1, h2, h3, h4 {
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+/* Premium Card container */
+.glass-panel {
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: var(--shadow-md);
+}
+
+/* Interactive elements */
+button {
+  font-family: inherit;
+  font-weight: 500;
+  padding: 10px 18px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 0.95rem;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: #ffffff;
+  box-shadow: 0 4px 12px var(--primary-glow);
+}
+.btn-primary:hover {
+  background: var(--primary-hover);
+  transform: translateY(-1px);
+}
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+.btn-secondary {
+  background: transparent;
+  border: 1px solid var(--panel-border);
+  color: var(--text-main);
+}
+.btn-secondary:hover {
+  background: var(--panel-border);
+}
+
+/* Pulse Animation for status indicators */
+@keyframes pulse {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 var(--pulse-color);
+  }
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 6px var(--pulse-color);
+  }
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 var(--pulse-color);
+  }
+}
+
+.pulse-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.pulse-dot.available {
+  background-color: var(--color-available);
+  --pulse-color: var(--color-available-glow);
+  animation: pulse 2s infinite;
+}
+
+.pulse-dot.reserved {
+  background-color: var(--color-reserved);
+  --pulse-color: var(--color-reserved-glow);
+  animation: pulse 2s infinite;
+}
+
+.pulse-dot.occupied {
+  background-color: var(--color-occupied);
+  --pulse-color: var(--color-occupied-glow);
+}
+
+.pulse-dot.maintenance {
+  background-color: var(--color-maintenance);
+  --pulse-color: var(--color-maintenance-glow);
+}
+
+/* Nav/Tab styles */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 5%;
+  background: var(--panel-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border-bottom: 1px solid var(--panel-border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: var(--shadow-sm);
+}
+
+.nav-links {
+  display: flex;
+  gap: 8px;
+}
+
+.nav-link {
+  padding: 8px 16px;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-muted);
+  font-weight: 500;
+  font-size: 0.95rem;
+  border: none;
+}
+
+.nav-link:hover {
+  color: var(--text-main);
+  background: var(--panel-border);
+}
+
+.nav-link.active {
+  color: var(--primary);
+  background: var(--primary-glow);
+}
+
+.app-container {
+  max-width: 1200px;
+  margin: 32px auto;
+  padding: 0 24px;
+}
+
+/* Global status badges */
+.badge {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.badge.available {
+  background-color: var(--color-available-glow);
+  color: var(--color-available);
+}
+.badge.reserved {
+  background-color: var(--color-reserved-glow);
+  color: var(--color-reserved);
+}
+.badge.occupied {
+  background-color: var(--color-occupied-glow);
+  color: var(--color-occupied);
+}
+.badge.maintenance {
+  background-color: var(--color-maintenance-glow);
+  color: var(--color-maintenance);
+}
+
+/* Grid layout for Hospitals list */
+.hospital-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 24px;
+  margin-top: 24px;
+}
+
+.hospital-card {
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.hospital-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--primary);
+}
+
+.hospital-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+.hospital-title {
+  font-size: 1.25rem;
+  color: var(--text-main);
+}
+
+.hospital-meta {
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.availability-pill-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--panel-border);
+}
+
+.availability-pill {
+  font-size: 0.8rem;
+  padding: 6px 12px;
+  border-radius: 8px;
+  background: var(--input-bg);
+  border: 1px solid var(--panel-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex: 1;
+  min-width: 120px;
+}
+
+/* Resources Viewer Panel */
+.resource-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.resource-card {
+  border-radius: 12px;
+  border: 1px solid var(--panel-border);
+  padding: 16px;
+  background: var(--input-bg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  text-align: center;
+  min-height: 120px;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.resource-card:hover {
+  transform: scale(1.02);
+  box-shadow: var(--shadow-sm);
+}
+
+.resource-card.available { border-top: 4px solid var(--color-available); }
+.resource-card.reserved { border-top: 4px solid var(--color-reserved); }
+.resource-card.occupied { border-top: 4px solid var(--color-occupied); }
+.resource-card.maintenance { border-top: 4px solid var(--color-maintenance); }
+
+.resource-name {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.resource-desc {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+/* Modal Booking Overlay */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  width: 90%;
+  max-width: 480px;
+  position: relative;
+  animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: 6px;
+  color: var(--text-main);
+}
+
+.form-group input, .form-group textarea, .form-group select {
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: var(--input-bg);
+  border: 1px solid var(--input-border);
+  color: var(--text-main);
+  font-size: 0.95rem;
+  outline: none;
+  font-family: inherit;
+}
+
+.form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-glow);
+}
+
+/* Admin Dashboard Table */
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 16px;
+  font-size: 0.95rem;
+}
+
+.admin-table th, .admin-table td {
+  padding: 14px 16px;
+  text-align: left;
+  border-bottom: 1px solid var(--panel-border);
+}
+
+.admin-table th {
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.admin-table tr:hover {
+  background: var(--panel-border);
+}
+
+/* Notifications and simulation blocks */
+.simulation-terminal {
+  background: #0f172a;
+  color: #38bdf8;
+  font-family: monospace;
+  padding: 16px;
+  border-radius: 8px;
+  margin-top: 12px;
+  font-size: 0.85rem;
+  overflow-x: auto;
+  border: 1px solid #1e293b;
+  max-height: 250px;
+}
+
+/* Notifications toast */
+.toast-container {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 1100;
+}
+
+.toast {
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  backdrop-filter: var(--glass-blur);
+  padding: 16px 24px;
+  border-radius: 12px;
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  animation: slideIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  max-width: 380px;
+  border-left: 4px solid var(--primary);
+}
+
+.toast.success { border-left-color: var(--color-available); }
+.toast.info { border-left-color: var(--color-reserved); }
+.toast.error { border-left-color: var(--color-occupied); }
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
